@@ -8,18 +8,9 @@ from sqlalchemy.orm import Session, relationship
 
 engine = create_engine('postgresql://richardph911@localhost:5432')
 session = Session(engine)
+db = SQLAlchemy()
 
-def create_app():
-    app = Flask(__name__)
-    
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://richardph911@localhost:5432/todoAPP'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    db = SQLAlchemy(app)
-    db.init_app(app)
-    migrate = Migrate(app, db)
-    db.create_all()
-
-    class TodoList(db.Model):
+class TodoList(db.Model):
         __tablename__ = 'todolists'
         id = Column(Integer, primary_key=True)
         name = Column(String(), nullable=False)
@@ -28,7 +19,7 @@ def create_app():
         def __repr__(self):
             return f'<TodoList {self.id} {self.name}>'
 
-    class Todo(db.Model):
+class Todo(db.Model):
         __tablename__ = 'todos'
         id = Column(Integer, primary_key=True)
         description = Column(String(), nullable=False)
@@ -38,6 +29,15 @@ def create_app():
         def __repr__(self):
             return f'<Todo {self.id} {self.description}, list {self.list_id}>'
   
+def create_app():
+    app = Flask(__name__)
+    
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://richardph911@localhost:5432/todoAPP'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db = SQLAlchemy(app)
+    db.init_app(app)
+    migrate = Migrate(app, db)
+    db.create_all()
     #home
     @app.route('/')
     def index():
